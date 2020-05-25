@@ -27,12 +27,29 @@ def draw(p1, p2, b):
     
     pygame.draw.rect(screen, white, b, 0)
 
+def move_paddles(paddle1, paddle2):
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_UP] and not keys[pygame.K_DOWN]:
+        if paddle1.top - 10 >= 0:
+            paddle1 = paddle1.move(0, -10)
+    if keys[pygame.K_DOWN] and not keys[pygame.K_UP]:
+        if paddle1.bottom + 10 <= 400:
+            paddle1 = paddle1.move(0, 10)
+    if keys[pygame.K_w] and not keys[pygame.K_s]:
+        if paddle2.top - 10 >= 0:
+            paddle2 = paddle2.move(0, -10)
+    if keys[pygame.K_s] and not keys[pygame.K_w]:
+        if paddle2.bottom + 10 <= 400:
+            paddle2 = paddle2.move(0, 10)
+    return paddle1, paddle2
 
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit(); sys.exit()
-    
+
+    paddle1, paddle2 = move_paddles(paddle1, paddle2)
+
     screen.fill(black)
     draw(paddle1, paddle2, ball)
     
