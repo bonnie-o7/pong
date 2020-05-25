@@ -18,6 +18,7 @@ white = (255, 255, 255)
 paddle1 = pygame.Rect(50, 150, 10, 50)
 paddle2 = pygame.Rect(640, 150, 10, 50)
 ball = pygame.Rect(346, 196, 8, 8)
+ball_vector = pygame.math.Vector2(6, 6)
 
 def draw(p1, p2, b):
     pygame.draw.line(screen, yellow, (349.5, 0), (349.5, 400))
@@ -49,6 +50,8 @@ while True:
             pygame.quit(); sys.exit()
 
     paddle1, paddle2 = move_paddles(paddle1, paddle2)
+
+    ball = ball.move(ball_vector)
 
     screen.fill(black)
     draw(paddle1, paddle2, ball)
