@@ -17,8 +17,11 @@ yellow = (247, 243, 163)
 white = (255, 255, 255)
 paddle1 = pygame.Rect(50, 150, 10, 50)
 paddle2 = pygame.Rect(640, 150, 10, 50)
-ball = pygame.Rect(346, 196, 8, 8)
-ball_vector = pygame.math.Vector2(6, 6)
+ball = pygame.Rect(346, 196, 10, 10)
+ball_vector = pygame.math.Vector2(5, 5)
+top_border = pygame.Rect(0, -99, 700, 100)
+bottom_border = pygame.Rect(0, 399, 700, 100)
+right_paddle_turn = True
 
 def draw(p1, p2, b):
     pygame.draw.line(screen, yellow, (349.5, 0), (349.5, 400))
@@ -44,14 +47,21 @@ def move_paddles(paddle1, paddle2):
             paddle2 = paddle2.move(0, 10)
     return paddle1, paddle2
 
+def move_ball(ball, ball_vector, right_paddle_turn):
+    if ball.colliderect(top_border) or ball.colliderect(bottom_border):
+        ball_vector = pygame.math.Vector2(ball_vector[0], ball_vector[1] * -1)
+    if (ball.colliderect(paddle1) and not right_paddle_turn) or (ball.colliderect(paddle2) and right_paddle_turn):
+        ball_vector = pygame.math.Vector2(ball_vector[0] * -1, ball_vector[1])
+        right_paddle_turn = not right_paddle_turn
+    return ball.move(ball_vector), ball_vector, right_paddle_turn
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit(); sys.exit()
 
     paddle1, paddle2 = move_paddles(paddle1, paddle2)
-
-    ball = ball.move(ball_vector)
+    ball, ball_vector, right_paddle_turn = move_ball(ball, ball_vector, right_paddle_turn)
 
     screen.fill(black)
     draw(paddle1, paddle2, ball)
