@@ -15,13 +15,18 @@ screen = pygame.display.set_mode((700, 400))
 black = (0, 0, 0)
 yellow = (247, 243, 163)
 white = (255, 255, 255)
-paddle1 = pygame.Rect(50, 150, 10, 50)
-paddle2 = pygame.Rect(640, 150, 10, 50)
+paddle1 = pygame.Rect(640, 150, 10, 50)
+paddle2 = pygame.Rect(50, 150, 10, 50)
 ball = pygame.Rect(346, 196, 10, 10)
 ball_vector = pygame.math.Vector2(5, 5)
 top_border = pygame.Rect(0, -99, 700, 100)
 bottom_border = pygame.Rect(0, 399, 700, 100)
 right_paddle_turn = True
+player1_goal = pygame.Rect(-100, 0, 100, 400)
+player2_goal = pygame.Rect(700, 0, 100, 400)
+player1_score = 0
+player2_score = 0
+informal_roman = pygame.font.SysFont(pygame.font.match_font('informalroman'), 20)
 
 def draw(p1, p2, b):
     pygame.draw.line(screen, yellow, (349.5, 0), (349.5, 400))
@@ -30,6 +35,8 @@ def draw(p1, p2, b):
     pygame.draw.rect(screen, white, p2, 0)
     
     pygame.draw.rect(screen, white, b, 0)
+
+    
 
 def move_paddles(paddle1, paddle2):
     keys = pygame.key.get_pressed()
@@ -50,21 +57,48 @@ def move_paddles(paddle1, paddle2):
 def move_ball(ball, ball_vector, right_paddle_turn):
     if ball.colliderect(top_border) or ball.colliderect(bottom_border):
         ball_vector = pygame.math.Vector2(ball_vector[0], ball_vector[1] * -1)
-    if (ball.colliderect(paddle1) and not right_paddle_turn) or (ball.colliderect(paddle2) and right_paddle_turn):
+    if (ball.colliderect(paddle2) and not right_paddle_turn) or (ball.colliderect(paddle1) and right_paddle_turn):
         ball_vector = pygame.math.Vector2(ball_vector[0] * -1, ball_vector[1])
         right_paddle_turn = not right_paddle_turn
     return ball.move(ball_vector), ball_vector, right_paddle_turn
 
+def restart(paddle1, paddle2, ball):
+    screen.fill(black)
+    draw(paddle1, paddle2, ball)
+    pygame.time.delay(int(1000/30))
+    pygame.display.update()
+    pygame.time.delay(2000)
+
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
+            print(player1_score, player2_score)
             pygame.quit(); sys.exit()
 
     paddle1, paddle2 = move_paddles(paddle1, paddle2)
     ball, ball_vector, right_paddle_turn = move_ball(ball, ball_vector, right_paddle_turn)
 
+    if ball.colliderect(player1_goal):
+        player2_score += 1
+        paddle1 = pygame.Rect(640, 150, 10, 50)
+        paddle2 = pygame.Rect(50, 150, 10, 50)
+        ball = pygame.Rect(346, 196, 10, 10)
+        
+        restart(paddle1, paddle2, ball)
+        continue
+
+    if ball.colliderect(player2_goal):
+        player1_score += 1
+        paddle1 = pygame.Rect(640, 150, 10, 50)
+        paddle2 = pygame.Rect(50, 150, 10, 50)
+        ball = pygame.Rect(346, 196, 10, 10)
+        
+        restart(paddle1, paddle2, ball)
+        continue
+
     screen.fill(black)
+    # pygame.Surface.blit(pygame.font.Font.render(player1_score, True, white), screen)
     draw(paddle1, paddle2, ball)
-    
+
     pygame.time.delay(int(1000/30))
     pygame.display.update()
