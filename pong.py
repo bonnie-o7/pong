@@ -2,6 +2,7 @@ import pygame
 import pygame.freetype
 import sys
 import socket
+from enum import Enum
 
 pygame.init()
 
@@ -29,6 +30,8 @@ player2_goal = pygame.Rect(720, 0, 100, 400)
 player1_score = 0
 player2_score = 0
 font = pygame.freetype.Font(None, 20)
+Screen = Enum('Screen', 'title game')
+current_screen = Screen.title
 
 def draw(p1, p2, b):
     screen.fill(black)
@@ -93,14 +96,24 @@ def scored():
 while True:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
-            print(player1_score, player2_score)
             pygame.quit(); sys.exit()
-
-    paddle1, paddle2 = move_paddles(paddle1, paddle2)
-    ball, ball_vector, right_paddle_turn = move_ball(ball, ball_vector, right_paddle_turn)
-    scored()    
     
-    draw(paddle1, paddle2, ball)
+    if current_screen == Screen.title:
+        screen.fill(black)
+        font.render_to(screen, (320, 30), 'Pong', white)
+        pygame.draw.rect(screen, white, (310, 75, 150, 30), 0)
+        font.render_to(screen, (320, 80), 'Single player', black)
+        pygame.draw.rect(screen, white, (310, 200, 150, 30), 0)
+        font.render_to(screen, (320, 210), 'Create Room', black)
+        pygame.draw.rect()
+
+        pygame.display.update()
+        
+    elif current_screen == Screen.game:
+        paddle1, paddle2 = move_paddles(paddle1, paddle2)
+        ball, ball_vector, right_paddle_turn = move_ball(ball, ball_vector, right_paddle_turn)
+        scored()
+        draw(paddle1, paddle2, ball)
 
     pygame.time.delay(int(1000/30))
 
