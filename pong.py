@@ -2,16 +2,20 @@ import pygame
 import pygame.freetype
 import sys
 import socket
+import pickle
 
 HOST = '127.0.0.1'  # The server's hostname or IP address
 PORT = 65432        # The port used by the server
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+    test1 = {'2': 2}
+    converted1 = pickle.dumps(test1)
     s.connect((HOST, PORT))
-    s.sendall(b'Hello, world')
+    s.sendall(converted1)
     data = s.recv(1024)
+    data = pickle.loads(data)
 
-print('Received', repr(data))
+print('Received', data['1'])
 
 pygame.init()
 
