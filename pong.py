@@ -7,13 +7,6 @@ import pygame_textinput
 
 pygame.init()
 
-# functions that moves paddles
-# function that calculates ball path upon bouncing
-# function that determines where ball moves
-# function that gives points
-# stop game once someone wins
-# function that draws
-
 pygame.display.set_caption('  Pong')
 screen = pygame.display.set_mode((700, 400))
 black = (0, 0, 0)
@@ -134,4 +127,3 @@ while True:
 
     pygame.display.update()
     pygame.time.delay(int(1000/30))
-
