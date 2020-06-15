@@ -117,7 +117,7 @@ while True:
             pygame.quit(); sys.exit()
         if event.type == pygame.MOUSEBUTTONDOWN:
             if singleplayer_button.collidepoint(pygame.mouse.get_pos()):
-                print('single')
+                current_screen = Screen.game
             if create_room_button.collidepoint(pygame.mouse.get_pos()):
                 print('create')
             if join_room_button.collidepoint(pygame.mouse.get_pos()):
