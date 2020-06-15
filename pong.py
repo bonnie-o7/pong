@@ -3,6 +3,7 @@ import pygame.freetype
 import sys
 import socket
 from enum import Enum
+import pygame_textinput
 
 pygame.init()
 
@@ -21,6 +22,10 @@ white = (255, 255, 255)
 paddle1 = pygame.Rect(640, 150, 10, 50)
 paddle2 = pygame.Rect(50, 150, 10, 50)
 ball = pygame.Rect(346, 196, 10, 10)
+singleplayer_button = pygame.Rect(280, 115, 150, 30)
+create_room_button = pygame.Rect(280, 200, 150, 30)
+join_room_button = pygame.Rect(280, 320, 150, 30)
+code_text_input = pygame.Rect(280, 285, 150, 30)
 ball_vector = pygame.math.Vector2(5, 5)
 top_border = pygame.Rect(0, -99, 700, 100)
 bottom_border = pygame.Rect(0, 399, 700, 100)
@@ -32,6 +37,7 @@ player2_score = 0
 font = pygame.freetype.Font(None, 20)
 Screen = Enum('Screen', 'title game')
 current_screen = Screen.title
+roomcode_input = pygame_textinput.TextInput()
 
 def draw(p1, p2, b):
     screen.fill(black)
@@ -45,8 +51,6 @@ def draw(p1, p2, b):
 
     font.render_to(screen, (270, 50), str(player1_score), white)
     font.render_to(screen, (415, 50), str(player2_score), white)
-
-    pygame.display.update()
 
 def move_paddles(paddle1, paddle2):
     keys = pygame.key.get_pressed()
@@ -93,21 +97,34 @@ def scored():
         player1_score += 1
         restart()
 
+def draw_titlescreen(events):
+    screen.fill(black)
+    font.render_to(screen, (330, 30), 'Pong', white)
+    pygame.draw.rect(screen, white, singleplayer_button, 0)
+    font.render_to(screen, (290, 120), 'Single player', black)
+    pygame.draw.rect(screen, white, create_room_button, 0)
+    font.render_to(screen, (290, 205), 'Create Room', black)
+    pygame.draw.rect(screen, white, join_room_button, 0)
+    font.render_to(screen, (300, 327), 'Join Room', black)
+    pygame.draw.rect(screen, white, code_text_input, 0)
+    roomcode_input.update(events)
+    screen.blit(roomcode_input.get_surface(), (280, 285))
+
 while True:
-    for event in pygame.event.get():
+    events = pygame.event.get()
+    for event in events:
         if event.type == pygame.QUIT:
             pygame.quit(); sys.exit()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if singleplayer_button.collidepoint(pygame.mouse.get_pos()):
+                print('single')
+            if create_room_button.collidepoint(pygame.mouse.get_pos()):
+                print('create')
+            if join_room_button.collidepoint(pygame.mouse.get_pos()):
+                print('join')
     
     if current_screen == Screen.title:
-        screen.fill(black)
-        font.render_to(screen, (320, 30), 'Pong', white)
-        pygame.draw.rect(screen, white, (310, 75, 150, 30), 0)
-        font.render_to(screen, (320, 80), 'Single player', black)
-        pygame.draw.rect(screen, white, (310, 200, 150, 30), 0)
-        font.render_to(screen, (320, 210), 'Create Room', black)
-        pygame.draw.rect()
-
-        pygame.display.update()
+        draw_titlescreen(events)
         
     elif current_screen == Screen.game:
         paddle1, paddle2 = move_paddles(paddle1, paddle2)
@@ -115,5 +132,6 @@ while True:
         scored()
         draw(paddle1, paddle2, ball)
 
+    pygame.display.update()
     pygame.time.delay(int(1000/30))
 
