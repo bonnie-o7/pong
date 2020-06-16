@@ -1,11 +1,14 @@
 import pygame
 import pygame.freetype
 import sys
-import socket
+import socket as s
 from enum import Enum
 import pygame_textinput
+import pickle
 
 pygame.init()
+
+# ------- Variables ---------
 
 pygame.display.set_caption('  Pong')
 screen = pygame.display.set_mode((700, 400))
@@ -31,6 +34,13 @@ font = pygame.freetype.Font(None, 20)
 Screen = Enum('Screen', 'title game')
 current_screen = Screen.title
 roomcode_input = pygame_textinput.TextInput()
+
+# ------- Functions ---------
+
+def init_socket(host, port):
+    socket = s.socket(s.AF_INET, s.SOCK_STREAM)
+    socket.connect((host, port))
+    return socket
 
 def draw(p1, p2, b):
     screen.fill(black)
@@ -102,6 +112,14 @@ def draw_titlescreen(events):
     pygame.draw.rect(screen, white, code_text_input, 0)
     roomcode_input.update(events)
     screen.blit(roomcode_input.get_surface(), (280, 285))
+
+def send_create_room_msg(socket):
+    msg = pickle.dumps({'type': 'create room'})
+    socket.sendall(msg)
+
+# ------- Main ---------
+
+socket = init_socket('127.0.0.1', 65432)
 
 while True:
     events = pygame.event.get()
