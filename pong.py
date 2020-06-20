@@ -113,13 +113,25 @@ def draw_titlescreen(events):
     roomcode_input.update(events)
     screen.blit(roomcode_input.get_surface(), (280, 285))
 
-def send_create_room_msg(socket):
-    msg = pickle.dumps({'type': 'create room'})
+def send_create_room_msg(socket, id):
+    msg = pickle.dumps({'type': 'create room', 'client': id})
     socket.sendall(msg)
+    data = socket.recv(1024)
+    data = pickle.loads(data)
+    return data['room code']
+
+def register_client(socket):
+    msg = pickle.dumps({'type': 'register client'})
+    socket.sendall(msg)
+    data = socket.recv(1024)
+    data = pickle.loads(data)
+    return data['id']
 
 # ------- Main ---------
 
 socket = init_socket('127.0.0.1', 65432)
+id = register_client(socket)
+room_code = None
 
 while True:
     events = pygame.event.get()
@@ -130,7 +142,9 @@ while True:
             if singleplayer_button.collidepoint(pygame.mouse.get_pos()):
                 current_screen = Screen.game
             if create_room_button.collidepoint(pygame.mouse.get_pos()):
-                print('create')
+                if not room_code:
+                    room_code = send_create_room_msg(socket, id)
+                print(room_code)
             if join_room_button.collidepoint(pygame.mouse.get_pos()):
                 print('join')
     
