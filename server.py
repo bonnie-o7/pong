@@ -44,7 +44,13 @@ class MyTCPHandler(socketserver.BaseRequestHandler):
                 return_message = {'type': 'room code', 'room code': code}
                 converted_message = pickle.dumps(return_message)
                 self.request.sendall(converted_message)
-    
+            if self.data['type'] == 'join room request':
+                existing = self.rooms[self.data['code']] 
+                self.rooms[self.data['code']] = (existing, self.data['client'])
+                return_message = pickle.dumps({'type': 'begin game'})
+                self.clients[self.data['client']].sendall(return_message)
+                self.clients[existing].sendall(return_message)
+                
     def create_code(self):
         while True:
             dig1 = randint(0, 25)

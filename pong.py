@@ -144,9 +144,17 @@ while True:
             if create_room_button.collidepoint(pygame.mouse.get_pos()):
                 if not room_code:
                     room_code = send_create_room_msg(socket, id)
-                print(room_code)
+                font.render_to(screen, (100, 100), room_code, white)
+                pygame.display.update()
+                socket.recv(1024)
+                current_screen = Screen.game
             if join_room_button.collidepoint(pygame.mouse.get_pos()):
-                print('join')
+                input = roomcode_input.get_text()
+                request = pickle.dumps({'type': 'join room request', 'code': input, 'client': id})
+                socket.sendall(request)
+                socket.recv(1024)
+                current_screen = Screen.game
+    #send the player to each
     
     if current_screen == Screen.title:
         draw_titlescreen(events)
